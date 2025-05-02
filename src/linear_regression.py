@@ -7,10 +7,8 @@ import numpy as np
 
 from pyspark.ml.param.shared import HasMaxIter, HasLearningRate, HasTol
 from pyspark.ml.regression import RegressionModel
-from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.base import _PredictorParams
 from pyspark.ml import Estimator
-from pyspark.sql import SparkSession
 
 os.environ['PYSPARK_PYTHON'] = sys.executable
 os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
@@ -151,30 +149,3 @@ class LinearRegressionEstimator(
         cashed_dataframe.unpersist()
 
         return model
- 
-
-if __name__ == '__main__':
-    spark = SparkSession.builder.appName('UsingLinearRegression').getOrCreate()
-
-    X = np.random.standard_normal((1000, 3))
-    noise = np.random.standard_normal(1000) * 0.01
-    weights = np.array([1.5, 0.3, -0.7])
-    y = np.dot(X, weights) + noise
-
-    x_columns = ['x1', 'x2', 'x3']
-    y_cloumn = 'y'
-    df = spark.createDataFrame(
-        np.column_stack((X, y)).tolist(),
-        x_columns + [y_cloumn],
-    )
-
-    aggregated_features_column = "features"
-    assembler = VectorAssembler(inputCols=x_columns, outputCol=aggregated_features_column)
-    transformed_df = assembler.transform(df)
-
-    print(transformed_df)
-
-    linear_regression = LinearRegressionEstimator(labelCol=y_cloumn, maxIter=50) 
-    model = linear_regression.fit(transformed_df)
-
-    print(model.coefficients)
