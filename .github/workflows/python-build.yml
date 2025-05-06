@@ -1,0 +1,35 @@
+name: Python build
+
+on: [ push, pull_request ]
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: 'requirements*.txt'
+
+      - name: Install Python requirements
+        run: pip install -r requirements.txt
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: 'requirements*.txt'
+
+      - name: Install Python requirements from cash
+        run: pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          python -m unittest discover

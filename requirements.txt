@@ -1,0 +1,4 @@
+pyspark==3.5.5
+setuptools==80.1.0
+tqdm==4.67.1
+numpy==2.2.5
